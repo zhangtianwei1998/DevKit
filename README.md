@@ -22,7 +22,11 @@
 ./build.sh        # 出包到 dist/DevKit.app
 ./build.sh run    # 出包并启动
 ./test.sh         # 跑自检
+./Icon/make.sh    # 单独重新生成图标
 ```
+
+图标是用 AppKit 手工画的（`Icon/icon.swift`），`build.sh` 会自动生成并缓存，
+改了绘图代码才会重算。
 
 需要 macOS 13+ 和 Command Line Tools（`xcode-select --install`）。
 
@@ -102,6 +106,9 @@ Sources/
   ScrollTap.swift    事件拦截与分帧重发
   ScrollView2.swift  滚动面板
   Settings.swift     配置持久化
+Icon/
+  icon.swift         图标绘制，输出 1024 PNG
+  make.sh            生成 icns（10 档尺寸）
 Tests/
   main.swift         纯逻辑断言
   ui/main.swift      需要 AppKit 的检查

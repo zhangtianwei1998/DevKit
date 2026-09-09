@@ -9,7 +9,13 @@ DIST="dist/$APP.app"
 SDK=$(xcrun --show-sdk-path --sdk macosx)
 
 rm -rf "$DIST"
-mkdir -p "$DIST/Contents/MacOS"
+mkdir -p "$DIST/Contents/MacOS" "$DIST/Contents/Resources"
+
+# 图标。生成一次就缓存着，每次构建重算十几个尺寸没必要。
+if [ ! -f Icon/DevKit.icns ] || [ Icon/icon.swift -nt Icon/DevKit.icns ]; then
+  ./Icon/make.sh Icon/DevKit.icns >/dev/null
+fi
+cp Icon/DevKit.icns "$DIST/Contents/Resources/"
 
 xcrun swiftc \
   -sdk "$SDK" \
@@ -25,6 +31,7 @@ cat > "$DIST/Contents/Info.plist" <<PLIST
 <dict>
   <key>CFBundleExecutable</key><string>$APP</string>
   <key>CFBundleIdentifier</key><string>$BUNDLE_ID</string>
+  <key>CFBundleIconFile</key><string>DevKit</string>
   <key>CFBundleName</key><string>$APP</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>0.1</string>
