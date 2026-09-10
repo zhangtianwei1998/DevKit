@@ -2,7 +2,18 @@
 
 三个 macOS 小工具合到一个应用里：改 hosts、截图钉图、鼠标滚动调节。
 
-用命令行工具链构建，不需要 Xcode。
+用命令行工具链构建，不需要 Xcode。灵感来自 SwitchHosts、Shottr 和 Mos，
+但只做自己常用的那部分，代码尽量少。
+
+## 快速开始
+
+```bash
+git clone https://github.com/zhangtianwei1998/DevKit.git
+cd DevKit
+./build.sh run
+```
+
+首次跑起来后建议看一下下面的「签名」一节，否则每次重新构建都要重新授权。
 
 ## 功能
 
@@ -115,3 +126,7 @@ Tests/
 ```
 
 配置存在 `~/Library/Application Support/DevKit/`。
+
+## 许可
+
+MIT，随便用。
