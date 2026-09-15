@@ -7,7 +7,7 @@ T=arm64-apple-macos13.0
 
 # 纯逻辑：hosts 文本处理 + 钉图几何计算
 xcrun swiftc -sdk "$SDK" -target $T \
-  Sources/HostsFile.swift Sources/PinGeometry.swift Sources/HotKeySpec.swift Sources/ScrollCore.swift Sources/HostsStore.swift Tests/main.swift \
+  Sources/HostsFile.swift Sources/PinGeometry.swift Sources/HotKeySpec.swift Sources/ScrollCore.swift Sources/HostsStore.swift Sources/Memo.swift Tests/main.swift \
   -o /tmp/devkit-test
 /tmp/devkit-test
 
@@ -18,6 +18,7 @@ xcrun swiftc -sdk "$SDK" -target $T \
   Sources/SnipView.swift Sources/HotKeySpec.swift Sources/HotKey.swift \
   Sources/HotKeyField.swift Sources/Settings.swift \
   Sources/ScrollCore.swift Sources/ScrollTap.swift Sources/ScrollView2.swift \
+  Sources/Memo.swift Sources/MemoView.swift \
   Tests/ui/main.swift \
   -o /tmp/devkit-uitest
 /tmp/devkit-uitest

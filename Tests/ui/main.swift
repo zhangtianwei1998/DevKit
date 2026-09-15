@@ -155,6 +155,40 @@ import SwiftUI
     if toggles < 3 { bad.append("滚动面板开关不够: \(toggles)") }
     if sliders < 2 { bad.append("滚动面板滑块不够: \(sliders)") }
 
+    // --- MemoView 能构建并布局，两栏都在 ---
+    // 存到临时文件，别把真的备忘覆盖掉
+    let memoFile = URL(filePath: "/tmp/devkit-test-memo.json")
+    try? FileManager.default.removeItem(at: memoFile)
+    let memoStore = MemoStore(file: memoFile)
+    memoStore.categories = [
+        Category(name: "工作", color: .mint, todos: [Todo(title: "x"), Todo(title: "y")]),
+        Category(name: "生活", color: .pink),
+    ]
+    let memo = NSHostingView(rootView: MemoView().environmentObject(memoStore))
+    memo.frame = NSRect(x: 0, y: 0, width: 660, height: 560)
+    let w4 = NSWindow(contentRect: memo.frame, styleMask: [.titled],
+                      backing: .buffered, defer: false)
+    w4.contentView = memo
+    memo.layoutSubtreeIfNeeded()
+
+    var memoScrolls: [NSScrollView] = []
+    func findMemoScroll(_ v: NSView) {
+        if let s = v as? NSScrollView { memoScrolls.append(s) }
+        v.subviews.forEach(findMemoScroll)
+    }
+    findMemoScroll(memo)
+    if memoScrolls.isEmpty { bad.append("MemoView 里找不到分类列表") }
+    if memo.fittingSize.width < 100 { bad.append("MemoView 布局塌了: \(memo.fittingSize)") }
+
+    // 改完要落盘，且读回来跟内存里一致
+    if let d = try? Data(contentsOf: memoFile),
+       let back = try? JSONDecoder().decode([Category].self, from: d) {
+        if back != memoStore.categories { bad.append("memo 存盘后读回来不一致") }
+    } else {
+        bad.append("memo 没落盘")
+    }
+    try? FileManager.default.removeItem(at: memoFile)
+
     if bad.isEmpty { print("ui pass"); exit(0) }
     bad.forEach { print("FAIL: \($0)") }
     exit(1)

@@ -253,4 +253,57 @@ let dup = Scheme(name: "a", content: "9")
 assert(dup.id != sA.id)
 assert(SchemeLookup.find(dup.id, in: list3) == nil, "按名字误匹配了")
 
+// ---------- Memo ----------
+
+// 32. badge 显示条数；空分类不显示
+var cat = Category(name: "工作", color: .green)
+assert(cat.badge == nil, "空分类不应该有 badge")
+cat.todos = [Todo(title: "a"), Todo(title: "b"), Todo(title: "c")]
+assert(cat.badge == "3", cat.badge ?? "nil")
+
+// 33. 存取一轮后内容不能变（颜色、顺序）
+let cats = [
+    Category(name: "工作", color: .mint, todos: [Todo(title: "x"), Todo(title: "y")]),
+    Category(name: "生活", color: .pink),
+]
+let mEnc = try! JSONEncoder().encode(cats)
+let mDec = try! JSONDecoder().decode([Category].self, from: mEnc)
+assert(mDec == cats, "存取后变了")
+assert(mDec[0].todos.map(\.title) == ["x", "y"], "条目顺序变了")
+assert(mDec[0].color == .mint && mDec[1].color == .pink, "颜色丢了")
+
+// 33b. 旧文件里带 done 字段，去掉状态后必须还能读进来，不能丢全部备忘
+let legacy = """
+[{"id":"\(UUID().uuidString)","name":"旧的","color":"red",
+  "todos":[{"id":"\(UUID().uuidString)","title":"留下我","done":true}]}]
+"""
+let migrated = try? JSONDecoder().decode([Category].self, from: Data(legacy.utf8))
+assert(migrated?.count == 1, "旧文件读不进来了，会丢全部备忘")
+assert(migrated?[0].todos.first?.title == "留下我", "旧条目内容丢了")
+
+// 34. 认不出的颜色名退回蓝色，不能整个文件解不开
+//     （旧版本存的色名被删掉时，丢一个颜色 << 丢全部备忘）
+let weird = "[{\"id\":\"\(UUID().uuidString)\",\"name\":\"n\",\"color\":\"chartreuse\",\"todos\":[]}]"
+let recovered = try? JSONDecoder().decode([Category].self, from: Data(weird.utf8))
+assert(recovered?.count == 1, "未知色名把整个文件弄挂了")
+assert(recovered?[0].color == .blue, "没退回蓝色")
+
+// 35. CategoryLookup 跟 SchemeLookup 同一个契约：删掉的 id 必须返回 nil
+let cA = Category(name: "a"), cB = Category(name: "b"), cC = Category(name: "c")
+let cList = [cA, cB, cC]
+assert(CategoryLookup.index(cC.id, in: cList) == 2)
+assert(CategoryLookup.find(cB.id, in: cList)?.name == "b")
+assert(CategoryLookup.find(cB.id, in: [cA, cC]) == nil, "删掉的分类还能查到")
+assert(CategoryLookup.index(cB.id, in: [cA, cC]) == nil, "删掉的分类还返回下标，会越界")
+assert(CategoryLookup.index(cC.id, in: [cA, cC]) == 1, "下标没跟着更新")
+assert(CategoryLookup.find(cA.id, in: []) == nil)
+assert(CategoryLookup.index(nil, in: cList) == nil)
+assert(CategoryLookup.find(Category(name: "a").id, in: cList) == nil, "按名字误匹配了")
+
+// 36. 越界下标返回 nil（视图闭包会在数据变短那一帧再读一次）
+assert(cList[safe: 2]?.name == "c")
+assert(cList[safe: 3] == nil, "越界没拦住")
+assert(cList[safe: -1] == nil, "负下标没拦住")
+assert([Category]()[safe: 0] == nil)
+
 print("all pass")

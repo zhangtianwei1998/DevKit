@@ -1,6 +1,7 @@
 import SwiftUI
 
 enum Module: String, CaseIterable, Identifiable {
+    case memo = "备忘"
     case hosts = "Hosts"
     case snip = "截图"
     case scroll = "滚动"
@@ -8,6 +9,7 @@ enum Module: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var icon: String {
         switch self {
+        case .memo: return "checklist"
         case .hosts: return "network"
         case .snip: return "camera.viewfinder"
         case .scroll: return "computermouse"
@@ -16,7 +18,7 @@ enum Module: String, CaseIterable, Identifiable {
 }
 
 struct RootView: View {
-    @State private var selection: Module = .hosts
+    @State private var selection: Module = .memo
 
     var body: some View {
         NavigationSplitView {
@@ -26,6 +28,7 @@ struct RootView: View {
             .navigationSplitViewColumnWidth(160)
         } detail: {
             switch selection {
+            case .memo: MemoView()
             case .hosts: HostsView()
             case .snip: SnipView()
             case .scroll: ScrollSettingsView()

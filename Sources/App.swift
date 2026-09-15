@@ -4,6 +4,7 @@ import SwiftUI
 struct DevKitApp: App {
     @StateObject private var hosts = HostsStore()
     @StateObject private var settings = Settings()
+    @StateObject private var memo = MemoStore()
     @Environment(\.openWindow) private var openWindow
 
     var body: some Scene {
@@ -11,6 +12,7 @@ struct DevKitApp: App {
             RootView()
                 .environmentObject(hosts)
                 .environmentObject(settings)
+                .environmentObject(memo)
         }
         .defaultSize(width: 820, height: 560)
 

@@ -1,6 +1,6 @@
 # DevKit
 
-三个 macOS 小工具合到一个应用里：改 hosts、截图钉图、鼠标滚动调节。
+三个 macOS 小工具合到一个应用里：改 hosts、截图钉图、鼠标滚动调节，外加一个备忘。
 
 用命令行工具链构建，不需要 Xcode。灵感来自 SwitchHosts、Shottr 和 Mos，
 但只做自己常用的那部分，代码尽量少。
@@ -26,6 +26,11 @@ cd DevKit
 
 **滚动** — 反转滚轮方向 + 平滑滚动。可调滚动距离和滑动持续感。
 默认只作用于鼠标滚轮，不改触控板手感（触控板本身就是连续滚动，再插值只会更糊）。
+
+**备忘** — 两层：分类（名字 + 一个颜色）下面挂待办。
+分类右边显示条数，两层都能拖着调顺序。
+条目内回车是换行，行高跟着内容长；空条目离开时自动清掉。
+删还有内容的分类会问一次。
 
 ## 构建
 
@@ -98,6 +103,8 @@ security find-identity -v -p codesigning | grep "DevKit Local Dev"
 - 滚动没有按应用白名单，是全局生效的。
 - 别同时开着 SwitchHosts，两个应用会互相覆盖 hosts。
 - 界面布局没有自动化测试，靠截图人眼确认（SwiftUI 的 `NavigationSplitView` 是异步布局，离屏渲染复现不出问题）。
+- 备忘没有完成状态、没有提醒、没有截止日期、没有搜索，也不跟系统提醒事项同步。
+- 条目里回车是换行，所以没有“回车接着建下一条”，新建走右上角的 +。
 
 ## 结构
 
@@ -118,6 +125,8 @@ Sources/
   ScrollCore.swift   滚动过滤与平滑积分（纯函数）
   ScrollTap.swift    事件拦截与分帧重发
   ScrollView2.swift  滚动面板
+  Memo.swift         备忘数据与存取
+  MemoView.swift     分类列表 + 待办列表
   Settings.swift     配置持久化
 Icon/
   icon.swift         图标绘制，输出 1024 PNG
