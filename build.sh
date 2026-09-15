@@ -38,6 +38,9 @@ cat > "$DIST/Contents/Info.plist" <<PLIST
   <key>CFBundleVersion</key><string>1</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>NSHighResolutionCapable</key><true/>
+  <!-- 只驻留菜单栏，不占 Dock 图标，也不进 ⌘Tab。
+       Edit 菜单仍然注册，⌘C/⌘V 在输入框里照常可用。 -->
+  <key>LSUIElement</key><true/>
 </dict>
 </plist>
 PLIST

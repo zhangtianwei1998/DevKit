@@ -84,6 +84,8 @@ security find-identity -v -p codesigning | grep "DevKit Local Dev"
 
 ## 权限
 
+应用只驻留菜单栏，不占 Dock 图标。关掉主窗口后从菜单栏的锤子图标 →「打开主窗口」回来。
+
 - **Hosts** 写 `/etc/hosts` 时弹密码框。想免密要装特权 helper，目前没做。
 - **截图** 需要「屏幕录制与系统录音」。
 - **滚动** 需要「辅助功能」。面板里有按钮直接跳转到系统设置，授权后会自动感知。
